@@ -1,6 +1,7 @@
+// src/components/notifications/NotificationList.jsx
 import React, { useState } from 'react';
 import {
-  FiCheckAll,
+  FiCheckSquare,  // ✅ FIXED: Was FiCheckAll
   FiRefreshCw,
   FiSettings,
   FiBellOff,
@@ -21,10 +22,10 @@ import {
   FiAtSign
 } from 'react-icons/fi';
 import NotificationItem from './NotificationItem';
-import Button from '../../common/Button';
-import Badge from '../../common/Badge';
-import Skeleton from '../../common/Skeleton';
-import EmptyState from '../../common/EmptyState';
+import Button from "../common/Button";
+import Badge from "../common/Badge";
+import Skeleton from "../common/Skeleton";
+import EmptyState from '../common/EmptyState';
 
 const NotificationList = ({
   notifications = [],
@@ -149,7 +150,7 @@ const NotificationList = ({
                 className="p-1.5 rounded-lg text-warmBeige-400 hover:text-warmBeige-100 hover:bg-navy-700/50 transition-all"
                 title="Mark all as read"
               >
-                <FiCheckAll size={18} />
+                <FiCheckSquare size={18} />  {/* ✅ FIXED: Was FiCheckAll */}
               </button>
             )}
             <button

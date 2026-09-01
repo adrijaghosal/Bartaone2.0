@@ -1,245 +1,235 @@
-import React, { useState, useEffect, useRef } from 'react';
+// src/components/notifications/NotificationBell.jsx
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   FiBell, 
   FiBellOff, 
-  FiCheck, 
-  FiX, 
-  FiSettings,
-  FiMail,
-  FiMessageSquare,
+  FiCheckCircle, 
+  FiXCircle, 
+  FiAlertCircle, 
+  FiMessageCircle,
   FiHeart,
-  FiUserPlus,
-  FiStar,
-  FiTrendingUp,
-  FiClock,
-  FiBookmark,
-  FiShare2,
-  FiAward,
+  FiUsers,
   FiZap
-} from 'react-icons/fi';
-import { useNotifications } from '../../../hooks/useNotifications';
-import { useAuth } from '../../../hooks/useAuth';
-import NotificationList from './NotificationList';
-import NotificationPreferences from './NotificationPreferences';
-import Badge from '../../common/Badge';
-import Button from '../../common/Button';
-import Modal from '../../common/Modal';
-import { formatDistanceToNow } from 'date-fns';
+} from "react-icons/fi";
+import { useNotifications } from "../../hooks/useNotifications";
+import { useAuth } from "../../hooks/useAuth";
+import NotificationList from "./NotificationList";
+import Badge from "../common/Badge";
 
-const NotificationBell = ({ 
-  size = 'md',
-  showBadge = true,
-  className = '',
-}) => {
-  const { user } = useAuth();
-  const {
-    notifications,
-    unreadCount,
-    loading,
-    markAllAsRead,
-    getNotifications,
-    refreshNotifications,
-    error
-  } = useNotifications();
-
+const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [newNotification, setNewNotification] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const dropdownRef = useRef(null);
-  const bellRef = useRef(null);
+  const { notifications, unreadCount, markAsRead, markAllAsRead, loading } = useNotifications();
+  const { user } = useAuth();
 
-  // Click outside handler
+  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Auto-refresh notifications every 30 seconds
+  // Animation for new notifications
   useEffect(() => {
-    if (!user) return;
-    
-    const interval = setInterval(() => {
-      refreshNotifications();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [user, refreshNotifications]);
-
-  // Show new notification popup
-  useEffect(() => {
-    if (notifications.length > 0 && !loading) {
-      const latest = notifications[0];
-      if (latest && !latest.read && !latest.seen) {
-        setNewNotification(latest);
-        setTimeout(() => setNewNotification(null), 5000);
-      }
+    if (unreadCount > 0) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 1000);
+      return () => clearTimeout(timer);
     }
-  }, [notifications, loading]);
+  }, [unreadCount]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) {
-      getNotifications();
+    if (!isOpen && unreadCount > 0) {
+      // Mark notifications as read when opening
+      markAllAsRead();
     }
   };
 
-  const handleMarkAllRead = async () => {
-    await markAllAsRead();
-  };
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refreshNotifications();
-    setIsRefreshing(false);
-  };
-
-  const handleNotificationClick = (notification) => {
-    setIsOpen(false);
-    if (notification.link) {
-      window.location.href = notification.link;
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'like':
+        return <FiHeart className="text-red-400" />;
+      case 'comment':
+        return <FiMessageCircle className="text-blue-400" />;
+      case 'follow':
+        return <FiUsers className="text-green-400" />;
+      case 'mention':
+        return <FiAtSign className="text-purple-400" />;
+      case 'alert':
+        return <FiAlertCircle className="text-yellow-400" />;
+      default:
+        return <FiBell className="text-gray-400" />;
     }
   };
 
-  // Size classes
-  const sizeClasses = {
-    sm: 'w-8 h-8 text-sm',
-    md: 'w-10 h-10 text-base',
-    lg: 'w-12 h-12 text-lg',
-    xl: 'w-14 h-14 text-xl',
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'like':
+        return 'border-red-500/20 bg-red-500/10';
+      case 'comment':
+        return 'border-blue-500/20 bg-blue-500/10';
+      case 'follow':
+        return 'border-green-500/20 bg-green-500/10';
+      case 'mention':
+        return 'border-purple-500/20 bg-purple-500/10';
+      case 'alert':
+        return 'border-yellow-500/20 bg-yellow-500/10';
+      default:
+        return 'border-gray-500/20 bg-gray-500/10';
+    }
   };
-
-  const iconSizes = {
-    sm: 16,
-    md: 20,
-    lg: 24,
-    xl: 28,
-  };
-
-  // Get notification type icon
-  const getNotificationTypeIcon = (type) => {
-    const icons = {
-      like: <FiHeart />,
-      comment: <FiMessageSquare />,
-      follow: <FiUserPlus />,
-      mention: <FiAtSign />,
-      share: <FiShare2 />,
-      bookmark: <FiBookmark />,
-      award: <FiAward />,
-      trending: <FiTrendingUp />,
-      system: <FiZap />,
-      email: <FiMail />,
-    };
-    return icons[type] || <FiBell />;
-  };
-
-  if (!user) {
-    return null;
-  }
 
   return (
-    <>
-      <div className="relative inline-block" ref={bellRef}>
-        {/* Bell Button */}
-        <button
-          onClick={handleToggle}
-          className={`
-            relative flex items-center justify-center
-            rounded-xl
-            bg-navy-800/50 border border-warmBeige-500/20
-            hover:bg-navy-700/50 hover:border-terracotta-500/30
-            transition-all duration-300
-            ${sizeClasses[size]}
-            ${className}
-          `}
-          aria-label="Notifications"
-        >
-          <FiBell size={iconSizes[size]} className="text-warmBeige-400 hover:text-warmBeige-100" />
-          
-          {/* Unread Badge */}
-          {showBadge && unreadCount > 0 && (
-            <Badge
-              variant="danger"
-              size="xs"
-              className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center animate-pulse"
-            >
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </Badge>
-          )}
-        </button>
+    <div className="relative" ref={dropdownRef}>
+      {/* Bell Button */}
+      <button
+        onClick={handleToggle}
+        className="relative p-2 rounded-full transition-all duration-300 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-terracotta-500/50"
+        aria-label="Notifications"
+      >
+        <FiBell 
+          className={`w-6 h-6 transition-transform duration-300 ${
+            isAnimating ? 'animate-bounce-slow' : ''
+          } ${isOpen ? 'text-terracotta-400' : 'text-warmBeige-100'}`}
+        />
+        
+        {/* Unread Badge */}
+        {unreadCount > 0 && (
+          <Badge 
+            variant="solid"
+            className="absolute -top-1 -right-1 bg-terracotta-500 text-white text-xs font-bold min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 animate-pulse-slow"
+          >
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </Badge>
+        )}
+      </button>
 
-        {/* New Notification Popup */}
-        {newNotification && (
-          <div className="absolute top-full right-0 mt-2 w-80 animate-slideDown z-50">
-            <div className="p-3 rounded-xl bg-terracotta-500/10 border border-terracotta-500/30 backdrop-blur-lg">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-terracotta-500/20">
-                  {getNotificationTypeIcon(newNotification.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-warmBeige-100 truncate">
-                    {newNotification.title}
-                  </p>
-                  <p className="text-xs text-warmBeige-400 truncate">
-                    {newNotification.message}
-                  </p>
-                </div>
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-96 max-h-[600px] bg-navy-900/95 backdrop-blur-xl border border-warmBeige-500/10 rounded-2xl shadow-2xl shadow-navy-950/50 overflow-hidden animate-slide-down z-50">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-warmBeige-500/10">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-warmBeige-100">Notifications</h3>
+              {unreadCount > 0 && (
+                <Badge variant="solid" className="bg-terracotta-500 text-white text-xs">
+                  {unreadCount} new
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
                 <button
-                  onClick={() => setNewNotification(null)}
-                  className="p-1 rounded-lg text-warmBeige-400 hover:text-warmBeige-100 hover:bg-navy-700/50 transition-all"
+                  onClick={markAllAsRead}
+                  className="text-xs text-warmBeige-500 hover:text-terracotta-400 transition-colors duration-200"
                 >
-                  <FiX size={14} />
+                  Mark all read
                 </button>
-              </div>
+              )}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 rounded-full hover:bg-white/5 transition-colors duration-200"
+              >
+                <FiXCircle className="w-4 h-4 text-warmBeige-500" />
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Dropdown */}
-        {isOpen && (
-          <div 
-            ref={dropdownRef}
-            className="absolute top-full right-0 mt-2 w-[400px] max-h-[600px] overflow-hidden z-50"
-          >
-            <NotificationList
-              notifications={notifications}
-              loading={loading}
-              unreadCount={unreadCount}
-              onMarkAllRead={handleMarkAllRead}
-              onRefresh={handleRefresh}
-              isRefreshing={isRefreshing}
-              onNotificationClick={handleNotificationClick}
-              onOpenPreferences={() => setShowPreferences(true)}
-              error={error}
-            />
+          {/* Notification List */}
+          <div className="overflow-y-auto max-h-[480px] custom-scrollbar">
+            {loading ? (
+              // Loading skeleton
+              <div className="p-4 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 animate-pulse">
+                    <div className="w-10 h-10 rounded-full bg-navy-700"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-navy-700 rounded w-3/4"></div>
+                      <div className="h-3 bg-navy-700 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : notifications.length === 0 ? (
+              // Empty state
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mb-4">
+                  <FiBellOff className="w-8 h-8 text-warmBeige-500/50" />
+                </div>
+                <h4 className="text-lg font-medium text-warmBeige-100 mb-2">No notifications</h4>
+                <p className="text-sm text-warmBeige-500/70">
+                  When you get notifications, they'll appear here
+                </p>
+              </div>
+            ) : (
+              // Notification items
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-4 border-b border-warmBeige-500/5 hover:bg-white/5 transition-colors duration-200 ${
+                    !notification.read ? 'bg-terracotta-500/5' : ''
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Icon */}
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full border ${getNotificationColor(notification.type)} flex items-center justify-center`}>
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-warmBeige-100">
+                        <span className="font-medium">{notification.sender?.name || 'Someone'}</span>
+                        {' '}
+                        <span className="text-warmBeige-400">{notification.message}</span>
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-warmBeige-500/70">
+                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                        </span>
+                        {!notification.read && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-terracotta-500"></span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Action button */}
+                    {notification.actionUrl && (
+                      <button
+                        onClick={() => window.location.href = notification.actionUrl}
+                        className="text-xs text-terracotta-400 hover:text-terracotta-300 transition-colors duration-200"
+                      >
+                        View
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Preferences Modal */}
-      <Modal
-        isOpen={showPreferences}
-        onClose={() => setShowPreferences(false)}
-        title="Notification Preferences"
-        size="lg"
-      >
-        <NotificationPreferences onClose={() => setShowPreferences(false)} />
-      </Modal>
-    </>
+          {/* Footer */}
+          {notifications.length > 0 && (
+            <div className="p-3 border-t border-warmBeige-500/10 text-center">
+              <button
+                onClick={() => {/* Navigate to notifications page */}}
+                className="text-sm text-warmBeige-500 hover:text-terracotta-400 transition-colors duration-200"
+              >
+                View all notifications →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
-
-// FiAtSign component for mentions
-const FiAtSign = (props) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="4" />
-    <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94" />
-  </svg>
-);
 
 export default NotificationBell;

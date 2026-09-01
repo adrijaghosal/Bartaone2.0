@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import { articleService } from '../services/articleService';
+import articleService from '../services/articleService';
 import { useAuth } from './AuthContext';
 import { useNotification } from './NotificationContext';
 

@@ -20,8 +20,8 @@ import {
   FiCalendar
 } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
-import Avatar from '../../common/Avatar';
-import Badge from '../../common/Badge';
+import Avatar from "../common/Avatar";
+import Badge from "../common/Badge";
 
 const NotificationItem = ({ 
   notification, 

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react';
-import { notificationService } from '../services/notificationService';
+// ✅ Correct - default import
+import notificationService from '../services/notificationService';
 import { useAuth } from './AuthContext';
 
 // Create Context

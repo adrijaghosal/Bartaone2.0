@@ -22,12 +22,11 @@ import {
   FiCalendar,
   FiSave
 } from 'react-icons/fi';
-import { useNotifications } from '../../../hooks/useNotifications';
-import { useAuth } from '../../../hooks/useAuth';
-import Card from '../../common/Card';
-import Button from '../../common/Button';
-import Badge from '../../common/Badge';
-import Toast from '../../common/Toast';
+import { useNotifications } from "../../hooks/useNotifications";
+import { useAuth } from "../../hooks/useAuth";
+import Button from '../common/Button';
+import Badge from '../common/Badge';
+import Toast from '../common/Toast';
 
 const NotificationPreferences = ({ 
   onClose,

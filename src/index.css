@@ -1,1 +1,2 @@
-@import "tailwindcss";
+/* src/index.css - This should ONLY have this */
+@import './styles/tailwind.css';

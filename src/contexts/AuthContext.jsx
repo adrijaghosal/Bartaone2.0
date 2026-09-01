@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { authService } from '../services/authService';
+import authService from '../services/authService';  // ✅ Correct - default import
 import { apiUtils } from '../utils/apiUtils';
 
 // Create Context

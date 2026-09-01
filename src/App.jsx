@@ -1,8 +1,13 @@
+// src/App.jsx
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider as ReduxProvider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './store/store';
+// ⚠️ COMMENT: PersistGate is only needed if you're using redux-persist
+// If you're not using redux-persist, remove these imports and the PersistGate wrapper
+// import { PersistGate } from 'redux-persist/integration/react';
+import store from './store/store'; // ✅ FIXED: Default import
+// ⚠️ COMMENT: Remove persistor import if not using redux-persist
+// import { persistor } from './store/store';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
@@ -124,7 +129,9 @@ function App() {
 
   return (
     <ReduxProvider store={store}>
-      <PersistGate loading={<PageLoader />} persistor={persistor}>
+      {/* ⚠️ COMMENT: Remove PersistGate wrapper if not using redux-persist */}
+      {/* If you want to keep persistence, install redux-persist and update store.js */}
+      {/* <PersistGate loading={<PageLoader />} persistor={persistor}> */}
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
@@ -285,7 +292,7 @@ function App() {
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
-      </PersistGate>
+      {/* </PersistGate> */}
     </ReduxProvider>
   );
 }

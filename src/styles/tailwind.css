@@ -118,9 +118,9 @@
     @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-terracotta-500/10;
   }
 
-  /* Button reset */
+  /* Button reset - FIXED: removed font-inherit */
   .btn-reset {
-    @apply bg-transparent border-none cursor-pointer font-inherit text-inherit;
+    @apply bg-transparent border-none cursor-pointer text-inherit;
   }
 
   /* Container */

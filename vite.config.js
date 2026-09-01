@@ -23,4 +23,5 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  // Remove any css.postcss configuration from here
 })
