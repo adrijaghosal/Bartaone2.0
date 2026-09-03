@@ -1,7 +1,7 @@
 // src/components/articles/ArticleCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiBookmark, FiHeart, FiMessageSquare, FiEye, FiClock, FiUser } from 'react-icons/fi';
+import { FiBookmark, FiHeart, FiMessageSquare, FiEye, FiClock } from 'react-icons/fi';
 import Card from '../common/Card';
 import Badge from '../common/Badge';
 
@@ -60,7 +60,6 @@ const ArticleCard = ({
         className={`${getVariantClasses()} ${className} hover:border-terracotta-500/30 transition-all duration-300`}
         hover
       >
-        {/* Image */}
         {coverImage && variant !== 'compact' && (
           <div className={`relative overflow-hidden ${variant === 'horizontal' ? 'w-1/3 flex-shrink-0' : 'w-full'}`}>
             <img
@@ -84,30 +83,23 @@ const ArticleCard = ({
           </div>
         )}
 
-        {/* Content */}
         <div className={`flex-1 ${variant === 'compact' ? 'flex items-center gap-3' : 'space-y-2'}`}>
-          {/* Category */}
-          <div className="flex flex-wrap items-center gap-2">
-            {category && (
-              <Badge variant="glass" size="sm">
-                {category}
-              </Badge>
-            )}
-          </div>
+          {category && (
+            <Badge variant="glass" size="sm">
+              {category}
+            </Badge>
+          )}
 
-          {/* Title */}
           <h3 className={`font-bold text-warmBeige-100 ${variant === 'compact' ? 'text-sm' : 'text-lg'} line-clamp-2 group-hover:text-terracotta-400 transition-colors`}>
             {title || 'Untitled Article'}
           </h3>
 
-          {/* Excerpt */}
           {excerpt && variant !== 'compact' && (
             <p className="text-sm text-warmBeige-400 line-clamp-2">
               {excerpt}
             </p>
           )}
 
-          {/* Meta Info */}
           <div className="flex flex-wrap items-center gap-3 text-xs text-warmBeige-500">
             {author && (
               <span className="text-warmBeige-300">{author.name || 'Unknown Author'}</span>
@@ -126,7 +118,6 @@ const ArticleCard = ({
             )}
           </div>
 
-          {/* Stats */}
           {variant !== 'compact' && (
             <div className="flex items-center gap-4 text-xs text-warmBeige-500">
               {views > 0 && (
@@ -151,7 +142,6 @@ const ArticleCard = ({
           )}
         </div>
 
-        {/* Bookmark Button (Compact) */}
         {variant === 'compact' && (
           <button
             onClick={(e) => {

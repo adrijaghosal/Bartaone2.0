@@ -1,4 +1,5 @@
 // src/pages/reader/HomePage.jsx
+// src/pages/reader/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -18,26 +19,19 @@ import {
 import { useArticles } from '../../hooks/useArticles';
 import { useAuth } from '../../hooks/useAuth';
 import { useStreak } from '../../hooks/useStreak';
-// ✅ FIXED: Changed from '../../../components/articles/ArticleCard' to '../../components/articles/ArticleCard'
+// ✅ FIXED: Use correct paths
 import ArticleCard from '../../components/articles/ArticleCard';
-// ✅ FIXED: Changed from '../../components/reader/feeds/FeaturedArticles' to './feeds/FeaturedArticles'
-import FeaturedArticles from './feeds/FeaturedArticles';
-// ✅ FIXED: Changed from '../../components/reader/feeds/CategoryFilter' to './feeds/CategoryFilter'
-import CategoryFilter from './feeds/CategoryFilter';
-// ✅ FIXED: Changed from '../../components/reader/publishers/PublisherCard' to '../publisher/PublisherCard'
-// Wait, let me check the path structure
-// Actually, from src/pages/reader/, the path to src/components/reader/publishers/PublisherCard is:
-// ../../components/reader/publishers/PublisherCard
-// But I see you have PublisherCard imported differently
-// Let me keep it as is but fix the path
+import FeaturedArticles from '../../components/reader/feeds/FeaturedArticles';
+import CategoryFilter from '../../components/reader/feeds/CategoryFilter';
 import PublisherCard from '../../components/reader/publishers/PublisherCard';
 import StreakBadge from '../../components/reader/streaks/StreakBadge';
-// ✅ These are correct - from src/pages/reader/ to src/components/common/ is ../../components/common/
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import Skeleton from '../../components/common/Skeleton';
 import AISummary from '../../components/ai/AISummary';
+
+// ... rest of your component code
 
 const HomePage = () => {
   const { user } = useAuth();
